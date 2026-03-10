@@ -31,6 +31,7 @@ export default function PasswordGeneratorScreen() {
   const [numbers, setNumbers] = useState(true);
   const [symbols, setSymbols] = useState(true);
   const [password, setPassword] = useState('');
+  const [copied, setCopied] = useState(false);
 
   const generate = () => {
     const len = length < 4 ? 4 : length > 32 ? 32 : length;
@@ -51,14 +52,13 @@ export default function PasswordGeneratorScreen() {
     setPassword(result);
   };
 
-  const copy = async () => {
+  const copy = () => {
     if (!password) return;
     try {
-      await Clipboard.setStringAsync(password);
-      Alert.alert('Copied', 'Password copied to clipboard');
-    } catch (e) {
-      Alert.alert('Error', 'Could not copy');
-    }
+      Clipboard.setString(password);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch (e) {}
   };
 
   const strength = getStrength(password);
@@ -129,7 +129,7 @@ export default function PasswordGeneratorScreen() {
           </View>
           <Text style={[styles.strengthText, { color: strength.color }]}>{strength.label}</Text>
           <TouchableOpacity style={styles.copyBtn} onPress={copy}>
-            <Text style={styles.copyBtnText}>Copy to clipboard</Text>
+            <Text style={styles.copyBtnText}>{copied ? 'Copied' : 'Copy to clipboard'}</Text>
           </TouchableOpacity>
         </View>
       ) : null}

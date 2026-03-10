@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, TextInput, Alert } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, TextInput } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import { colors, spacing, radius } from '../constants/theme';
 
@@ -37,28 +37,27 @@ function getLuminance(hex) {
 export default function ColorPickerScreen() {
   const [selected, setSelected] = useState('#14b8a6');
   const [custom, setCustom] = useState('#14b8a6');
+  const [copiedType, setCopiedType] = useState(null);
 
   const fullHex = expandHex(selected) || (expandHex(custom) ?? selected);
   const rgb = hexToRgb(fullHex || selected);
   const isLight = getLuminance(fullHex || selected) > 0.5;
 
-  const copyHex = async () => {
+  const copyHex = () => {
     try {
-      await Clipboard.setStringAsync(fullHex || selected);
-      Alert.alert('Copied', `${fullHex || selected} copied`);
-    } catch (e) {
-      Alert.alert('Error', 'Could not copy');
-    }
+      Clipboard.setString(fullHex || selected);
+      setCopiedType('hex');
+      setTimeout(() => setCopiedType(null), 1500);
+    } catch (e) {}
   };
 
-  const copyRgb = async () => {
+  const copyRgb = () => {
     const s = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
     try {
-      await Clipboard.setStringAsync(s);
-      Alert.alert('Copied', 'RGB value copied');
-    } catch (e) {
-      Alert.alert('Error', 'Could not copy');
-    }
+      Clipboard.setString(s);
+      setCopiedType('rgb');
+      setTimeout(() => setCopiedType(null), 1500);
+    } catch (e) {}
   };
 
   const handleCustomChange = (t) => {
@@ -78,10 +77,10 @@ export default function ColorPickerScreen() {
         </Text>
         <View style={styles.copyRow}>
           <TouchableOpacity style={[styles.copyChip, isLight ? styles.copyChipDark : styles.copyChipLight]} onPress={copyHex}>
-            <Text style={[styles.copyChipText, isLight ? styles.textDark : styles.textLight]}>Copy Hex</Text>
+            <Text style={[styles.copyChipText, isLight ? styles.textDark : styles.textLight]}>{copiedType === 'hex' ? 'Copied' : 'Copy Hex'}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.copyChip, isLight ? styles.copyChipDark : styles.copyChipLight]} onPress={copyRgb}>
-            <Text style={[styles.copyChipText, isLight ? styles.textDark : styles.textLight]}>Copy RGB</Text>
+            <Text style={[styles.copyChipText, isLight ? styles.textDark : styles.textLight]}>{copiedType === 'rgb' ? 'Copied' : 'Copy RGB'}</Text>
           </TouchableOpacity>
         </View>
       </View>
