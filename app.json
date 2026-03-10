@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "Coco Tools",
+    "slug": "Coco",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#E5E5E5"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "icon": "./assets/icon.png",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#E5E5E5"
+      },
+      "package": "com.hamzehdev.Coco"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
