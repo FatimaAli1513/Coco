@@ -2,6 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { colors } from './constants/theme';
 
 import HomeScreen from './screens/HomeScreen';
 import CalculatorScreen from './screens/CalculatorScreen';
@@ -22,17 +23,18 @@ export default function App() {
         <Stack.Navigator
           initialRouteName="Home"
           screenOptions={{
-            headerStyle: { backgroundColor: '#f5f5f5' },
-            headerTintColor: '#1a1a1a',
-            headerTitleStyle: { fontWeight: '600', fontSize: 18 },
+            headerStyle: { backgroundColor: colors.white },
+            headerTintColor: colors.primaryDark,
+            headerTitleStyle: { fontWeight: '700', fontSize: 17, color: colors.text },
             headerShadowVisible: false,
-            contentStyle: { backgroundColor: '#f5f5f5' },
+            contentStyle: { backgroundColor: colors.light },
+            headerBackTitleVisible: false,
           }}
         >
           <Stack.Screen
             name="Home"
             component={HomeScreen}
-            options={{ title: 'Coco Tools', headerLargeTitle: false }}
+            options={{ headerShown: false }}
           />
           <Stack.Screen name="Calculator" component={CalculatorScreen} options={{ title: 'Calculator' }} />
           <Stack.Screen name="UnitConverter" component={UnitConverterScreen} options={{ title: 'Unit Converter' }} />

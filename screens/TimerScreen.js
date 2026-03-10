@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { colors, radius } from '../constants/theme';
 
 function formatTime(sec) {
-  const m = Math.floor(sec / 60);
-  const s = sec % 60;
+  const m = Math.floor(Math.max(0, sec) / 60);
+  const s = Math.max(0, sec % 60);
   return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 
@@ -19,7 +20,10 @@ export default function TimerScreen() {
     const m = parseInt(minutes, 10) || 0;
     const s = parseInt(seconds, 10) || 0;
     const total = m * 60 + s;
-    if (total <= 0) return;
+    if (total <= 0) {
+      Alert.alert('Invalid', 'Please enter at least 1 second');
+      return;
+    }
     setTotalSec(total);
     remainingRef.current = total;
     setRunning(true);
@@ -35,8 +39,9 @@ export default function TimerScreen() {
       remainingRef.current -= 1;
       setTotalSec(remainingRef.current);
       if (remainingRef.current <= 0) {
-        setRunning(false);
         if (intervalRef.current) clearInterval(intervalRef.current);
+        setRunning(false);
+        Alert.alert('Time\'s up!', 'Your timer has finished.', [{ text: 'OK' }]);
       }
     }, 1000);
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
@@ -49,34 +54,42 @@ export default function TimerScreen() {
 
   const reset = () => {
     setRunning(false);
+    if (intervalRef.current) clearInterval(intervalRef.current);
     const m = parseInt(minutes, 10) || 0;
     const s = parseInt(seconds, 10) || 0;
-    setTotalSec(m * 60 + s);
-    remainingRef.current = m * 60 + s;
+    const total = m * 60 + s;
+    setTotalSec(total);
+    remainingRef.current = total;
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.display}>{formatTime(totalSec)}</Text>
-      {!running ? (
+      <View style={styles.displayWrap}>
+        <Text style={[styles.display, totalSec === 0 && running === false && styles.displayDone]}>{formatTime(totalSec)}</Text>
+      </View>
+      {!running && (
         <View style={styles.inputRow}>
           <TextInput
             style={styles.input}
             value={minutes}
-            onChangeText={setMinutes}
+            onChangeText={(t) => { setMinutes(t.replace(/\D/g, '').slice(0, 3)); }}
             keyboardType="number-pad"
-            placeholder="Min"
+            placeholder="0"
+            placeholderTextColor="#64748b"
+            maxLength={3}
           />
           <Text style={styles.colon}>:</Text>
           <TextInput
             style={styles.input}
             value={seconds}
-            onChangeText={setSeconds}
+            onChangeText={(t) => { setSeconds(t.replace(/\D/g, '').slice(0, 2)); }}
             keyboardType="number-pad"
-            placeholder="Sec"
+            placeholder="0"
+            placeholderTextColor="#64748b"
+            maxLength={2}
           />
         </View>
-      ) : null}
+      )}
       <View style={styles.buttons}>
         {!running ? (
           <TouchableOpacity style={[styles.btn, styles.btnStart]} onPress={start}>
@@ -84,7 +97,7 @@ export default function TimerScreen() {
           </TouchableOpacity>
         ) : (
           <>
-            <TouchableOpacity style={[styles.btn, styles.btnPause]} onPress={stop}>
+            <TouchableOpacity style={[styles.btn, styles.btnStop]} onPress={stop}>
               <Text style={styles.btnText}>Stop</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.btn, styles.btnReset]} onPress={reset}>
@@ -98,25 +111,27 @@ export default function TimerScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#1e293b', alignItems: 'center', justifyContent: 'center', padding: 20 },
-  display: { fontSize: 64, fontWeight: '300', color: '#fff', fontVariant: ['tabular-nums'], marginBottom: 24 },
+  container: { flex: 1, backgroundColor: colors.light, alignItems: 'center', justifyContent: 'center', padding: 20 },
+  displayWrap: { marginBottom: 24 },
+  display: { fontSize: 72, fontWeight: '200', color: colors.text, fontVariant: ['tabular-nums'], letterSpacing: 4 },
+  displayDone: { color: colors.success },
   inputRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 32 },
   input: {
-    width: 80,
+    width: 88,
     height: 56,
     borderWidth: 2,
-    borderColor: '#475569',
-    borderRadius: 12,
-    color: '#fff',
-    fontSize: 24,
+    borderColor: colors.lightMuted,
+    borderRadius: radius.md,
+    color: colors.text,
+    fontSize: 28,
     textAlign: 'center',
   },
-  colon: { fontSize: 32, color: '#94a3b8', marginHorizontal: 8 },
-  buttons: { flexDirection: 'row', gap: 12 },
-  btn: { paddingVertical: 16, paddingHorizontal: 28, borderRadius: 12 },
-  btnStart: { backgroundColor: '#22c55e' },
-  btnPause: { backgroundColor: '#ef4444' },
-  btnReset: { backgroundColor: '#475569' },
-  btnText: { color: '#fff', fontSize: 18, fontWeight: '600' },
-  btnTextSec: { color: '#cbd5e1', fontSize: 18 },
+  colon: { fontSize: 36, color: colors.textMuted, marginHorizontal: 8 },
+  buttons: { flexDirection: 'row', gap: 16 },
+  btn: { paddingVertical: 18, paddingHorizontal: 36, borderRadius: radius.lg },
+  btnStart: { backgroundColor: '#14b8a6' },
+  btnStop: { backgroundColor: colors.error },
+  btnReset: { backgroundColor: colors.lightMuted },
+  btnText: { color: '#fff', fontSize: 18, fontWeight: '700' },
+  btnTextSec: { color: colors.text, fontSize: 18, fontWeight: '600' },
 });

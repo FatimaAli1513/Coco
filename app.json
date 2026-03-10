@@ -9,7 +9,7 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#E5E5E5"
+      "backgroundColor": "#f1f5f9"
     },
     "ios": {
       "supportsTablet": true
@@ -18,7 +18,7 @@
       "icon": "./assets/icon.png",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#E5E5E5"
+        "backgroundColor": "#f1f5f9"
       },
       "package": "com.hamzehdev.Coco"
     },
